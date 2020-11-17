@@ -1,0 +1,51 @@
+#container {
+    height: 100%;
+    width: 100%;
+    grid-template: 
+    "header" 20% / 100%
+    "bookcase" 80% / 100%;
+}
+
+.book {
+    display: inline-block;
+    margin: 20px;
+}
+
+.bookInfo {
+    display: flex;
+}
+
+#header {
+    grid-area: header;
+}
+
+#bookcase {
+    grid-area: bookcase;
+    grid-template: none repeat(5, 1fr) / repeat(5, 1fr);
+}
+
+#newBtn {
+    cursor: pointer;
+}
+
+#myForm {
+    background: -webkit-linear-gradient(bottom, rgb(221, 221, 221), rgb(194, 194, 194));
+    padding: 5px 20px 20px 20px;
+    border: 2px solid black;
+    border-radius: 10px;
+}
+
+#myForm label {
+    margin-right: 8px;
+}
+
+#form-author, #form-title, #form-pages, #form-readUnread, #form-buttons {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.form-popup {
+    width: 60%;
+    display: none;
+}
