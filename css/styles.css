@@ -49,3 +49,13 @@
     width: 60%;
     display: none;
 }
+
+
+#readCheck {
+    position: relative;
+    float: right;
+}
+
+#readCheckLabel {
+    float: left;
+}

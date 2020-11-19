@@ -25,34 +25,115 @@ newBtn.addEventListener("click", () => {
     newBtn.style.display = "none";
 })
 
-submitBtn.addEventListener("click", () => {
-    console.log(form.author.value);
-})
+let index = container.dataset.index;
+index = 0;
 
-cancelBtn.addEventListener("click", () => {
-    newBtn.style.display = "block";
-})
-
-closeForm = () => {
-    document.getElementById("form-container").style.display = "none";
+createBook = () => {
+    let author = form.author.value;
+    let title = form.title.value;
+    let pages = form.pages.value;
+    let readUnread = "";
+    if (document.getElementById("read").checked) {
+        readUnread = "read";
+    }
+    if (document.getElementById("unread").checked) {
+        readUnread = "unread";
+    }
+    newBook = new Book(author, title, pages, readUnread);
+    myLibrary.push(newBook);
+    console.log(myLibrary);
+    display();
 }
 
 let myLibrary = [];
 
 const display = () => {
-    for (i=0; i< myLibrary.length; i++) {
+    for (i=index; i< myLibrary.length; i++) {
         let book = document.createElement("div");
+        let bookIndex = book.dataset.index;
+        bookIndex = index;
+        console.log(bookIndex);
         book.classList.add("book");
         bookcase.appendChild(book);
         for (const property in myLibrary[i]) {
             let bookInfo = document.createElement("div");
             bookInfo.classList.add("bookInfo");
-            bookInfo.textContent = `${property}: ${myLibrary[i][property]}`;
+            if (property === "pages") {
+                str = String(property); 
+                str = str.charAt(0).toUpperCase() + str.slice(1);
+                bookInfo.textContent = `${str}: ${myLibrary[i][property]}`;
+            } else if (property === "read") {
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.name = "readCheck";
+                checkbox.value = "readCheck";
+                checkbox.id = "readCheck";
+                const label = document.createElement("label");
+                label.id = "readCheckLabel";
+                label.htmlFor = "readCheck";
+                if (document.getElementById("read").checked) {
+                    label.appendChild(document.createTextNode("Read: "));
+                    checkbox.checked = true;
+                }
+                if (document.getElementById("unread").checked) {
+                    label.appendChild(document.createTextNode("Unread: "));
+                    checkbox.checked = false;
+                }
+                bookInfo.appendChild(checkbox);
+                bookInfo.appendChild(label);
+            } else {
+                bookInfo.textContent = `${myLibrary[i][property]}`;
+            }
             book.appendChild(bookInfo);
         } 
+        const remove = document.createElement("button");
+        remove.class = "removeBtn";
+        remove.textContent = "Remove";
+        remove.addEventListener("click", e => {
+            let book = e.target; /* how to find the div of this so I can grab the dataset variable */
+            console.log(e.target);
+            console.log(book.dataset.index);
+            console.log("book");
+        })
+        book.appendChild(remove);
     }
+    index += 1;
+    /* add removeBtn here if 1st attempt doesnt work (prolly wont) */
 }
 
+submitBtn.addEventListener("click", () => {
+    createBook();
+    closeForm();
+    newBtn.style.display = "block";
+})
+
+cancelBtn.addEventListener("click", () => {
+    closeForm();
+    newBtn.style.display = "block";
+})
+
+closeForm = () => {
+    document.getElementById("form-container").style.display = "none";
+    form.author.value = "";
+    form.title.value = "";
+    form.pages.value = "";
+    if (document.getElementById("read").checked) {
+        document.getElementById("read").checked = false;
+    }
+    if (document.getElementById("unread").checked) {
+        document.getElementById("unread").checked = false;
+    }
+}
+/*
+removeBtn = document.querySelectorAll(".removeBtn")
+removeBtn.forEach((btn) => {
+    btn.addEventListener("click", e => {
+        let book = e.target;
+        console.log(book.dataset.index);
+        console.log("book");
+    })
+})
+*/
 function Book(author, title, pages, read) {
     this.author = author;
     this.title = title;
@@ -60,12 +141,4 @@ function Book(author, title, pages, read) {
     this.read = read;
 }
 
-function addBooktoLibrary(author, title, pages, read) {
-    newBook = new Book(author, title, pages, read);
-    myLibrary.push(newBook);
-}
 
-addBooktoLibrary("Melvin", "computer", "25", "read");
-addBooktoLibrary("Darren", "yeet", "200", "unread")
-console.log(myLibrary);
-display();
