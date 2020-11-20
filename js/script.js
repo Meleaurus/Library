@@ -41,7 +41,6 @@ createBook = () => {
     }
     newBook = new Book(author, title, pages, readUnread);
     myLibrary.push(newBook);
-    console.log(myLibrary);
     display();
 }
 
@@ -52,8 +51,9 @@ const display = () => {
         let book = document.createElement("div");
         let bookIndex = book.dataset.index;
         bookIndex = index;
-        console.log(bookIndex);
         book.classList.add("book");
+        book.id = String(bookIndex);
+        console.log(book.id)
         bookcase.appendChild(book);
         for (const property in myLibrary[i]) {
             let bookInfo = document.createElement("div");
@@ -89,11 +89,22 @@ const display = () => {
         const remove = document.createElement("button");
         remove.class = "removeBtn";
         remove.textContent = "Remove";
-        remove.addEventListener("click", e => {
-            let book = e.target; /* how to find the div of this so I can grab the dataset variable */
-            console.log(e.target);
-            console.log(book.dataset.index);
-            console.log("book");
+        remove.id = String(index);
+        remove.addEventListener("click", () => {
+            console.log(remove.id);
+            console.log(myLibrary);
+            let bookIndex = document.getElementById(String(remove.id))
+            bookIndex.textContent = "";
+            bookIndex.parentNode.removeChild(bookIndex);
+            myLibrary.splice(parseInt(remove.id), 1);
+            console.log(myLibrary);
+            index -= 1;
+            console.log(index);
+            myLibrary.forEach( () => {
+                container.dataset.index -= 1
+                console.log(container.dataset.index);
+            });
+            /* after removing book, cycle through myLibrary and adjust the indexes of books */
         })
         book.appendChild(remove);
     }
