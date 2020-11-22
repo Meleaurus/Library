@@ -13,6 +13,11 @@ addbooktolibrary should take object and append it to arr
 and then trigger a display function that loops through arr
 display uses Object attributes to fill in the textContent 
 CSS designate grid areas for each attribute
+
+TODO
+- fix the indexes of each book after one book has been removed
+like if book0 removed, book1 is the new book0
+
 */
 
 const newBtn = document.createElement("button");
@@ -48,12 +53,11 @@ let myLibrary = [];
 
 const display = () => {
     for (i=index; i< myLibrary.length; i++) {
+        console.log(myLibrary.length);
         let book = document.createElement("div");
-        let bookIndex = book.dataset.index;
-        bookIndex = index;
+        let bookIndex = index;
         book.classList.add("book");
         book.id = String(bookIndex);
-        console.log(book.id)
         bookcase.appendChild(book);
         for (const property in myLibrary[i]) {
             let bookInfo = document.createElement("div");
@@ -91,24 +95,33 @@ const display = () => {
         remove.textContent = "Remove";
         remove.id = String(index);
         remove.addEventListener("click", () => {
-            console.log(remove.id);
-            console.log(myLibrary);
-            let bookIndex = document.getElementById(String(remove.id))
-            bookIndex.textContent = "";
-            bookIndex.parentNode.removeChild(bookIndex);
-            myLibrary.splice(parseInt(remove.id), 1);
-            console.log(myLibrary);
-            index -= 1;
-            console.log(index);
-            myLibrary.forEach( () => {
-                container.dataset.index -= 1
-                console.log(container.dataset.index);
-            });
+            let bookRemove = document.getElementById(remove.id);
+            console.log(bookRemove);
+            bookRemove.textContent = "";
+            console.log(myLibrary + "before");
+            console.log(parseInt(bookRemove.id));
+            myLibrary.splice(parseInt(bookRemove.id), 1);
             /* after removing book, cycle through myLibrary and adjust the indexes of books */
+            myLibrary.forEach( (book) => {
+                /* bookNum NaN */
+                bookNum = parseInt(book.id);
+                bookRemoveNum = parseInt(bookRemove.id);
+                console.log(bookNum +"bookNum");
+                console.log(bookRemoveNum +"removedNum");
+                if (bookNum > bookRemoveNum) {
+                    book.id = `${bookNum -= 1}`;
+                }
+            })
+            bookRemove.removeAttribute("id");
+            bookRemove.removeAttribute("class");
+            bookRemove.remove();
+            console.log(myLibrary + "after");
+            console.log(bookRemove);
+            index -= 1;
         })
         book.appendChild(remove);
     }
-    index += 1;
+    index += 1
     /* add removeBtn here if 1st attempt doesnt work (prolly wont) */
 }
 
