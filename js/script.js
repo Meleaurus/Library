@@ -95,27 +95,26 @@ const display = () => {
         remove.textContent = "Remove";
         remove.id = String(index);
         remove.addEventListener("click", () => {
+            /* problem is that remove.id might be selecting itself, maybe loop thru btns and -1? */
             let bookRemove = document.getElementById(remove.id);
             console.log(bookRemove);
             bookRemove.textContent = "";
-            console.log(myLibrary + "before");
-            console.log(parseInt(bookRemove.id));
             myLibrary.splice(parseInt(bookRemove.id), 1);
             /* after removing book, cycle through myLibrary and adjust the indexes of books */
-            myLibrary.forEach( (book) => {
-                /* bookNum NaN */
+            bookRemove.removeAttribute("class");
+            Array.from(document.querySelectorAll(".book")).forEach((book) => {
+                console.log(book);
                 bookNum = parseInt(book.id);
                 bookRemoveNum = parseInt(bookRemove.id);
-                console.log(bookNum +"bookNum");
-                console.log(bookRemoveNum +"removedNum");
                 if (bookNum > bookRemoveNum) {
                     book.id = `${bookNum -= 1}`;
                 }
+                console.log(book);
             })
+            remove.removeAttribute("id");
+            remove.remove();
             bookRemove.removeAttribute("id");
-            bookRemove.removeAttribute("class");
             bookRemove.remove();
-            console.log(myLibrary + "after");
             console.log(bookRemove);
             index -= 1;
         })
