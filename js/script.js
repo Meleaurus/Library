@@ -46,14 +46,15 @@ createBook = () => {
     }
     newBook = new Book(author, title, pages, readUnread);
     myLibrary.push(newBook);
+    console.log(index + "before");
     display();
+    console.log(index + "after");
 }
 
 let myLibrary = [];
 
 const display = () => {
     for (i=index; i< myLibrary.length; i++) {
-        console.log(myLibrary.length);
         let book = document.createElement("div");
         let bookIndex = index;
         book.classList.add("book");
@@ -76,7 +77,7 @@ const display = () => {
                 label.id = "readCheckLabel";
                 label.htmlFor = "readCheck";
                 if (document.getElementById("read").checked) {
-                    label.appendChild(document.createTextNode("Read: "));
+                    label.appendChild(document.createTextNode(" Read"));
                     checkbox.checked = true;
                 }
                 if (document.getElementById("unread").checked) {
@@ -91,37 +92,39 @@ const display = () => {
             book.appendChild(bookInfo);
         } 
         const remove = document.createElement("button");
-        remove.class = "removeBtn";
+        remove.classList.add("removeBtn");
         remove.textContent = "Remove";
         remove.id = String(index);
         remove.addEventListener("click", () => {
             /* problem is that remove.id might be selecting itself, maybe loop thru btns and -1? */
             let bookRemove = document.getElementById(remove.id);
-            console.log(bookRemove);
             bookRemove.textContent = "";
             myLibrary.splice(parseInt(bookRemove.id), 1);
-            /* after removing book, cycle through myLibrary and adjust the indexes of books */
+            /* after removing book, cycle through myLibrary and adjust the indexes of books and removeBtns */
             bookRemove.removeAttribute("class");
+            Array.from(document.querySelectorAll(".removeBtn")).forEach((btn) => {
+                btnNum = parseInt(btn.id);
+                bookRemoveNum = parseInt(bookRemove.id);
+                if (btnNum > bookRemoveNum) {
+                    btn.id = `${btnNum -= 1}`;
+                }
+            })
             Array.from(document.querySelectorAll(".book")).forEach((book) => {
-                console.log(book);
                 bookNum = parseInt(book.id);
                 bookRemoveNum = parseInt(bookRemove.id);
                 if (bookNum > bookRemoveNum) {
                     book.id = `${bookNum -= 1}`;
                 }
-                console.log(book);
             })
-            remove.removeAttribute("id");
+            /* remove.removeAttribute("id"); */
             remove.remove();
-            bookRemove.removeAttribute("id");
+            /* bookRemove.removeAttribute("id"); */
             bookRemove.remove();
-            console.log(bookRemove);
             index -= 1;
         })
         book.appendChild(remove);
     }
     index += 1
-    /* add removeBtn here if 1st attempt doesnt work (prolly wont) */
 }
 
 submitBtn.addEventListener("click", () => {
@@ -147,16 +150,7 @@ closeForm = () => {
         document.getElementById("unread").checked = false;
     }
 }
-/*
-removeBtn = document.querySelectorAll(".removeBtn")
-removeBtn.forEach((btn) => {
-    btn.addEventListener("click", e => {
-        let book = e.target;
-        console.log(book.dataset.index);
-        console.log("book");
-    })
-})
-*/
+
 function Book(author, title, pages, read) {
     this.author = author;
     this.title = title;
