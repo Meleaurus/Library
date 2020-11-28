@@ -15,9 +15,8 @@ display uses Object attributes to fill in the textContent
 CSS designate grid areas for each attribute
 
 TODO
-- fix the indexes of each book after one book has been removed
-like if book0 removed, book1 is the new book0
-
+- CSS - figure out container and display: 
+- add database??? 
 */
 
 const newBtn = document.createElement("button");
@@ -33,27 +32,31 @@ newBtn.addEventListener("click", () => {
 let index = container.dataset.index;
 index = 0;
 
+let myLibrary = [];
+
 createBook = () => {
     let author = form.author.value;
+    if (author === "") {
+        author = "None";
+    }
     let title = form.title.value;
+    if (title === "") {
+        title = "None";
+    }
     let pages = form.pages.value;
+    if (pages === "") {
+        pages = 0;
+    }
     let readUnread = "";
     if (document.getElementById("read").checked) {
         readUnread = "read";
-    }
-    if (document.getElementById("unread").checked) {
+    } else if (document.getElementById("unread").checked) {
+        readUnread = "unread";
+    } else {
         readUnread = "unread";
     }
     newBook = new Book(author, title, pages, readUnread);
     myLibrary.push(newBook);
-    console.log(index + "before");
-    display();
-    console.log(index + "after");
-}
-
-let myLibrary = [];
-
-const display = () => {
     for (i=index; i< myLibrary.length; i++) {
         let book = document.createElement("div");
         let bookIndex = index;
@@ -67,27 +70,41 @@ const display = () => {
                 str = String(property); 
                 str = str.charAt(0).toUpperCase() + str.slice(1);
                 bookInfo.textContent = `${str}: ${myLibrary[i][property]}`;
-            } else if (property === "read") {
+            } else if (property === "readUnread") {
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.name = "readCheck";
                 checkbox.value = "readCheck";
-                checkbox.id = "readCheck";
+                checkbox.id = `checkbox${bookIndex}`;
+                checkbox.classList.add("readUnreadCheckboxes");
                 const label = document.createElement("label");
-                label.id = "readCheckLabel";
+                label.id = `label${bookIndex}`;
                 label.htmlFor = "readCheck";
-                if (document.getElementById("read").checked) {
+                label.classList.add("readUnreadLabels")
+                if (readUnread === "read") {
                     label.appendChild(document.createTextNode(" Read"));
                     checkbox.checked = true;
                 }
-                if (document.getElementById("unread").checked) {
-                    label.appendChild(document.createTextNode("Unread: "));
+                if (readUnread === "unread") {
+                    label.appendChild(document.createTextNode(" Unread"));
                     checkbox.checked = false;
                 }
                 bookInfo.appendChild(checkbox);
                 bookInfo.appendChild(label);
+                checkbox.addEventListener("change", () => {
+                    let box = document.getElementById("checkbox" + book.id);
+                    let labelChange = document.getElementById("label" + book.id);
+                    labelChange.textContent = "";
+                    if (box.checked) {
+                        labelChange.appendChild(document.createTextNode(" Read"));
+                    } else {
+                        labelChange.appendChild(document.createTextNode(" Unread"));
+                    }
+                })
             } else {
-                bookInfo.textContent = `${myLibrary[i][property]}`;
+                str = String(property);
+                str = str.charAt(0).toUpperCase() + str.slice(1);
+                bookInfo.textContent = `${str}: ${myLibrary[i][property]}`;
             }
             book.appendChild(bookInfo);
         } 
@@ -96,29 +113,37 @@ const display = () => {
         remove.textContent = "Remove";
         remove.id = String(index);
         remove.addEventListener("click", () => {
-            /* problem is that remove.id might be selecting itself, maybe loop thru btns and -1? */
             let bookRemove = document.getElementById(remove.id);
+            let bookRemoveNum = bookRemove.id;
             bookRemove.textContent = "";
             myLibrary.splice(parseInt(bookRemove.id), 1);
             /* after removing book, cycle through myLibrary and adjust the indexes of books and removeBtns */
             bookRemove.removeAttribute("class");
+            Array.from(document.querySelectorAll(".readUnreadCheckboxes")).forEach((checkbox) => {
+                checkboxNum = parseInt(checkbox.id.slice(8));
+                if (checkboxNum > bookRemoveNum) {
+                    checkbox.id = `checkbox${checkboxNum - 1}`;
+                }
+            })
+            Array.from(document.querySelectorAll(".readUnreadLabels")).forEach((label) => {
+                labelNum = parseInt(label.id.slice(5));
+                if (labelNum > bookRemoveNum) {
+                    label.id = `label${labelNum - 1}`;
+                }
+            })
             Array.from(document.querySelectorAll(".removeBtn")).forEach((btn) => {
                 btnNum = parseInt(btn.id);
-                bookRemoveNum = parseInt(bookRemove.id);
                 if (btnNum > bookRemoveNum) {
                     btn.id = `${btnNum -= 1}`;
                 }
             })
             Array.from(document.querySelectorAll(".book")).forEach((book) => {
                 bookNum = parseInt(book.id);
-                bookRemoveNum = parseInt(bookRemove.id);
                 if (bookNum > bookRemoveNum) {
                     book.id = `${bookNum -= 1}`;
                 }
             })
-            /* remove.removeAttribute("id"); */
             remove.remove();
-            /* bookRemove.removeAttribute("id"); */
             bookRemove.remove();
             index -= 1;
         })
@@ -151,11 +176,11 @@ closeForm = () => {
     }
 }
 
-function Book(author, title, pages, read) {
+function Book(author, title, pages, readUnread) {
     this.author = author;
     this.title = title;
     this.pages = pages;
-    this.read = read;
+    this.readUnread = readUnread;
 }
 
 
