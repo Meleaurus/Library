@@ -1,23 +1,57 @@
+/* colors 
+olive: #c5d5cb
+grey: #9fa8a3
+beige: #e3e0cf
+*/
+
 #container {
     height: 100%;
     width: 50%;
-    grid-template-rows: 20% 80%;
-    grid-template-columns: 100%;
     grid-template-areas: 
     "header"
     "bookcase"; 
+    grid-template-rows: 20% 80%;
+    grid-template-columns: 100%;
     margin: auto;
-    border: 10px solid black;
+    border: 5px solid black;
     align-items: center;
     justify-items: center;
+    background: #c5d5cb;
 }
 
 #title {
     text-align: center;
 }
 
+button {
+    background-color: white;
+}
+
+button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+#newBtn:hover {
+    background-color: #9fa8a3;
+    color: white;
+}
+
 #newBtn {
-    font-size: 10px;
+    margin: 10px;
+    font-size: 20px;
+    border: 2px solid black;
+    border-radius: 10px;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 30%);
+    text-decoration: none;
+    transition-duration: 0.5s;
 }
 
 .book {
@@ -36,25 +70,17 @@
 }
 
 #header {
-    display: inline-grid;
+    display: flex;
     grid-area: header;
-    margin: 0;
-    top: 50%;
-    left: 50%;
 }
 
 #bookcase {
     display: inline-grid;
     grid-area: bookcase;
-    grid-template: none repeat(5, 1fr) / repeat(5, 1fr);
-}
-
-#newBtn {
-    cursor: pointer;
 }
 
 #myForm {
-    background: -webkit-linear-gradient(bottom, rgb(221, 221, 221), rgb(194, 194, 194));
+    background: #e3e0cf;
     padding: 5px 20px 20px 20px;
     border: 2px solid black;
     border-radius: 10px;
@@ -64,6 +90,10 @@
     margin-right: 8px;
 }
 
+h2 {
+    text-align: center;
+}
+
 #form-author, #form-title, #form-pages, #form-readUnread, #form-buttons {
     display: block;
     margin-top: 10px;
@@ -71,10 +101,23 @@
 }
 
 .form-popup {
-    width: 60%;
+    width: 100%;
     display: none;
+    float: left;
+    position: relative;
+    margin: 10px;
 }
 
+#form-buttons {
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: 50% 50%;
+    justify-items: center;
+}
+
+#submit, #cancel {
+    background: white;
+}
 
 #readCheck {
     position: relative;
