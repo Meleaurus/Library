@@ -1,6 +1,7 @@
 const container = document.querySelector("#container");
 const header = document.querySelector("#header");
 const bookcase = document.querySelector("#bookcase");
+const newBtn = document.getElementById("newBtn");
 const form = document.querySelector("#myForm");
 const submitBtn = document.querySelector("#submit");
 const cancelBtn = document.querySelector("#cancel");
@@ -19,10 +20,6 @@ TODO
 - add database??? 
 */
 
-const newBtn = document.createElement("button");
-newBtn.textContent = "New Book";
-newBtn.id = "newBtn";
-header.appendChild(newBtn);
 
 newBtn.addEventListener("click", () => {
     document.getElementById("form-container").style.display = "block";
@@ -164,7 +161,7 @@ cancelBtn.addEventListener("click", () => {
 })
 
 closeForm = () => {
-    document.getElementById("form-container").style.display = "none";
+    document.getElementById("form-container").style.display = "none"; 
     form.author.value = "";
     form.title.value = "";
     form.pages.value = "";
