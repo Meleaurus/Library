@@ -5,24 +5,10 @@ const newBtn = document.getElementById("newBtn");
 const form = document.querySelector("#myForm");
 const submitBtn = document.querySelector("#submit");
 const cancelBtn = document.querySelector("#cancel");
-/* 
-button "Add book" with event listener
-on press prompt user to enter user info
-book object created within event listener 
-addbooktolibrary called
-addbooktolibrary should take object and append it to arr
-and then trigger a display function that loops through arr
-display uses Object attributes to fill in the textContent 
-CSS designate grid areas for each attribute
-
-TODO
-- CSS - figure out container and display: 
-- add database??? 
-*/
-
+const formContainer = document.getElementById("form-container");
 
 newBtn.addEventListener("click", () => {
-    document.getElementById("form-container").style.display = "block";
+    formContainer.style.display = "block";
     newBtn.style.display = "none";
 })
 
@@ -33,18 +19,18 @@ let myLibrary = [];
 
 createBook = () => {
     let author = form.author.value;
+    let title = form.title.value;
+    let pages = form.pages.value;
+    let readUnread = "";
     if (author === "") {
         author = "None";
     }
-    let title = form.title.value;
     if (title === "") {
         title = "None";
     }
-    let pages = form.pages.value;
     if (pages === "") {
         pages = 0;
     }
-    let readUnread = "";
     if (document.getElementById("read").checked) {
         readUnread = "read";
     } else if (document.getElementById("unread").checked) {
@@ -54,7 +40,7 @@ createBook = () => {
     }
     newBook = new Book(author, title, pages, readUnread);
     myLibrary.push(newBook);
-    for (i=index; i< myLibrary.length; i++) {
+    for (i = index; i < myLibrary.length; i++) {
         let book = document.createElement("div");
         let bookIndex = index;
         book.classList.add("book");
@@ -64,7 +50,7 @@ createBook = () => {
             let bookInfo = document.createElement("div");
             bookInfo.classList.add("bookInfo");
             if (property === "pages") {
-                str = String(property); 
+                str = String(property);
                 str = str.charAt(0).toUpperCase() + str.slice(1);
                 bookInfo.textContent = `${str}: ${myLibrary[i][property]}`;
             } else if (property === "readUnread") {
@@ -104,7 +90,7 @@ createBook = () => {
                 bookInfo.textContent = `${str}: ${myLibrary[i][property]}`;
             }
             book.appendChild(bookInfo);
-        } 
+        }
         const remove = document.createElement("button");
         remove.classList.add("removeBtn");
         remove.textContent = "Remove";
@@ -161,7 +147,7 @@ cancelBtn.addEventListener("click", () => {
 })
 
 closeForm = () => {
-    document.getElementById("form-container").style.display = "none"; 
+    document.getElementById("form-container").style.display = "none";
     form.author.value = "";
     form.title.value = "";
     form.pages.value = "";
