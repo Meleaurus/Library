@@ -6,39 +6,64 @@ const form = document.querySelector("#myForm");
 const submitBtn = document.querySelector("#submit");
 const cancelBtn = document.querySelector("#cancel");
 const formContainer = document.getElementById("form-container");
+let index = 0;
+let myLibrary = [];
+
+function Book(author, title, pages, readUnread) {
+    this.author = author;
+    this.title = title;
+    this.pages = pages;
+    this.readUnread = readUnread;
+}
+
+Book.prototype.giveInfo = function () {
+    return { author: this.author, title: this.title, pages: this.pages, readUnread: this.readUnread }
+}
 
 newBtn.addEventListener("click", () => {
     formContainer.style.display = "block";
     newBtn.style.display = "none";
 })
 
-let index = container.dataset.index;
-index = 0;
+submitBtn.addEventListener("click", () => {
+    createBook();
+    closeForm();
+    newBtn.style.display = "block";
+})
 
-let myLibrary = [];
+cancelBtn.addEventListener("click", () => {
+    closeForm();
+    newBtn.style.display = "block";
+})
+
+
+closeForm = () => {
+    document.getElementById("form-container").style.display = "none";
+    form.author.value = "";
+    form.title.value = "";
+    form.pages.value = "";
+    if (document.getElementById("read").checked) {
+        document.getElementById("read").checked = false;
+    }
+    if (document.getElementById("unread").checked) {
+        document.getElementById("unread").checked = false;
+    }
+}
+
+formInfo = (author, title, pages) => {
+    if (author === "") author = "None";
+    if (title === "") title = "None";
+    if (pages === "") pages = 0;
+    return (document.getElementById("read").checked) ?
+        new Book(author, title, pages, "read")
+        : new Book(author, title, pages, "unread")
+}
 
 createBook = () => {
     let author = form.author.value;
     let title = form.title.value;
     let pages = form.pages.value;
-    let readUnread = "";
-    if (author === "") {
-        author = "None";
-    }
-    if (title === "") {
-        title = "None";
-    }
-    if (pages === "") {
-        pages = 0;
-    }
-    if (document.getElementById("read").checked) {
-        readUnread = "read";
-    } else if (document.getElementById("unread").checked) {
-        readUnread = "unread";
-    } else {
-        readUnread = "unread";
-    }
-    newBook = new Book(author, title, pages, readUnread);
+    newBook = formInfo(author, title, pages);
     myLibrary.push(newBook);
     for (i = index; i < myLibrary.length; i++) {
         let book = document.createElement("div");
@@ -46,29 +71,32 @@ createBook = () => {
         book.classList.add("book");
         book.id = String(bookIndex);
         bookcase.appendChild(book);
-        for (const property in myLibrary[i]) {
+        for (const property in newBook) {
             let bookInfo = document.createElement("div");
             bookInfo.classList.add("bookInfo");
-            if (property === "pages") {
-                str = String(property);
-                str = str.charAt(0).toUpperCase() + str.slice(1);
+            if (property === "author" || property === "title") {
+                let str = property.charAt(0).toUpperCase() + property.slice(1);
                 bookInfo.textContent = `${str}: ${myLibrary[i][property]}`;
-            } else if (property === "readUnread") {
+                book.appendChild(bookInfo);
+            }
+            if (property === "pages") {
+                bookInfo.textContent = `Pages: ${myLibrary[i][property]}`;
+                book.appendChild(bookInfo);
+            }
+            if (property === "readUnread") {
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.name = "readCheck";
-                checkbox.value = "readCheck";
                 checkbox.id = `checkbox${bookIndex}`;
                 checkbox.classList.add("readUnreadCheckboxes");
                 const label = document.createElement("label");
                 label.id = `label${bookIndex}`;
                 label.htmlFor = "readCheck";
                 label.classList.add("readUnreadLabels")
-                if (readUnread === "read") {
+                if (myLibrary[i][property] === "read") {
                     label.appendChild(document.createTextNode(" Read"));
                     checkbox.checked = true;
                 }
-                if (readUnread === "unread") {
+                if (myLibrary[i][property] === "unread") {
                     label.appendChild(document.createTextNode(" Unread"));
                     checkbox.checked = false;
                 }
@@ -84,12 +112,8 @@ createBook = () => {
                         labelChange.appendChild(document.createTextNode(" Unread"));
                     }
                 })
-            } else {
-                str = String(property);
-                str = str.charAt(0).toUpperCase() + str.slice(1);
-                bookInfo.textContent = `${str}: ${myLibrary[i][property]}`;
+                book.appendChild(bookInfo);
             }
-            book.appendChild(bookInfo);
         }
         const remove = document.createElement("button");
         remove.classList.add("removeBtn");
@@ -100,7 +124,6 @@ createBook = () => {
             let bookRemoveNum = bookRemove.id;
             bookRemove.textContent = "";
             myLibrary.splice(parseInt(bookRemove.id), 1);
-            /* after removing book, cycle through myLibrary and adjust the indexes of books and removeBtns */
             bookRemove.removeAttribute("class");
             Array.from(document.querySelectorAll(".readUnreadCheckboxes")).forEach((checkbox) => {
                 checkboxNum = parseInt(checkbox.id.slice(8));
@@ -135,35 +158,7 @@ createBook = () => {
     index += 1
 }
 
-submitBtn.addEventListener("click", () => {
-    createBook();
-    closeForm();
-    newBtn.style.display = "block";
-})
 
-cancelBtn.addEventListener("click", () => {
-    closeForm();
-    newBtn.style.display = "block";
-})
 
-closeForm = () => {
-    document.getElementById("form-container").style.display = "none";
-    form.author.value = "";
-    form.title.value = "";
-    form.pages.value = "";
-    if (document.getElementById("read").checked) {
-        document.getElementById("read").checked = false;
-    }
-    if (document.getElementById("unread").checked) {
-        document.getElementById("unread").checked = false;
-    }
-}
-
-function Book(author, title, pages, readUnread) {
-    this.author = author;
-    this.title = title;
-    this.pages = pages;
-    this.readUnread = readUnread;
-}
 
 
