@@ -1,164 +1,271 @@
-const container = document.querySelector("#container");
-const header = document.querySelector("#header");
-const bookcase = document.querySelector("#bookcase");
-const newBtn = document.getElementById("newBtn");
-const form = document.querySelector("#myForm");
-const submitBtn = document.querySelector("#submit");
-const cancelBtn = document.querySelector("#cancel");
-const formContainer = document.getElementById("form-container");
-let index = 0;
-let myLibrary = [];
+// Your web app's Firebase configuration
+var firebaseConfig = {
+    apiKey: "AIzaSyC74Ut3enILkqh9wafOesOFt6-xlovCNrQ",
+    authDomain: "library-bd1e.firebaseapp.com",
+    projectId: "library-bd1e",
+    databaseURL: "https://library-bd1e-default-rtdb.firebaseio.com/",
+    storageBucket: "library-bd1e.appspot.com",
+    messagingSenderId: "322803676213",
+    appId: "1:322803676213:web:1d640cb15cfc3b34666d7c"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
-function Book(author, title, pages, readUnread) {
-    this.author = author;
+gotData = (data) => {
+    // refresh list of cards to remove duplicates
+    let cards = document.querySelectorAll('.card');
+    for (let i = 0; i < cards.length; i++) {
+        cards[i].remove();
+    }
+
+    // books is the parent object of long str key objects
+    let books = data.val();
+    // gets array of all the object keys
+    let keys = Object.keys(books);
+    console.log(keys);
+    console.log(keys.length);
+    for (let i = 0; i < keys.length; i++) {
+        let key = keys[i];
+        let title = books[key].title;
+        let pages = books[key].pages;
+        let author = books[key].author;
+        let read = books[key].read;
+        console.log(keys[i]);
+        console.log("add-book");
+        addBookToLibrary(title, pages, author, read, key);
+    }
+}
+
+errData = (data) => {
+    console.log(data);
+}
+
+// Get a reference to messages collection
+// collection is basically a SQLite table
+var booksRef = firebase.database().ref('books');
+booksRef.on('value', gotData, errData);
+
+// get elements
+// const preObject = document.getElementById('object');
+
+// create references
+// ref -> root
+// child -> creates child key of object
+// const dbRefObject = firebase.database().ref().child('book');
+
+
+// sync object data changes
+// called everytime there is data change
+// snap param = data snapshot which returns important things
+// dbRefObject.on('value', snap => {
+//     preObject.innerHTML = JSON.stringify(snap.val(), null, 3);
+// });
+
+// project id library-bd1e
+
+const modal = document.querySelector('.modal');
+const modalForm = document.getElementById('modal-form');
+const container = document.querySelector('.container');
+const submitBtn = document.getElementById('submit-btn');
+const addBtn = document.getElementById('add-btn');
+const exitBtn = document.getElementById('exit-btn');
+const form = document.querySelector('.modal-form');
+const cancelBtn = document.getElementById('cancel-btn');
+
+// array to hold books
+// let books = [];
+
+// constructor function which creates book objects
+function Book(title, pages, author, read) {
     this.title = title;
     this.pages = pages;
-    this.readUnread = readUnread;
+    this.author = author;
+    this.read = read;
 }
 
-Book.prototype.giveInfo = function () {
-    return { author: this.author, title: this.title, pages: this.pages, readUnread: this.readUnread }
-}
-
-newBtn.addEventListener("click", () => {
-    formContainer.style.display = "block";
-    newBtn.style.display = "none";
-})
-
-submitBtn.addEventListener("click", () => {
-    createBook();
-    closeForm();
-    newBtn.style.display = "block";
-})
-
-cancelBtn.addEventListener("click", () => {
-    closeForm();
-    newBtn.style.display = "block";
-})
-
-
-closeForm = () => {
-    document.getElementById("form-container").style.display = "none";
-    form.author.value = "";
-    form.title.value = "";
-    form.pages.value = "";
-    if (document.getElementById("read").checked) {
-        document.getElementById("read").checked = false;
-    }
-    if (document.getElementById("unread").checked) {
-        document.getElementById("unread").checked = false;
+// creates prototype function to change read status of object
+Book.prototype.changeReadStatus = function (readStatus) {
+    if (readStatus === 'read') {
+        this.read = 'unread';
+    } else {
+        this.read = 'read';
     }
 }
 
-formInfo = (author, title, pages) => {
-    if (author === "") author = "None";
-    if (title === "") title = "None";
-    if (pages === "") pages = 0;
-    return (document.getElementById("read").checked) ?
-        new Book(author, title, pages, "read")
-        : new Book(author, title, pages, "unread")
-}
+// consider looping through form.elements?
+addBookToLibrary = (title, pages, author, readStatus, key) => {
+    // let title = getInputValue('book-title');
+    // let pages = getInputValue('book-pages');
+    // let author = getInputValue('book-author');
+    // let read = document.getElementById('book-read');
+    // let readCheck = '';
 
-createBook = () => {
-    let author = form.author.value;
-    let title = form.title.value;
-    let pages = form.pages.value;
-    newBook = formInfo(author, title, pages);
-    myLibrary.push(newBook);
-    for (i = index; i < myLibrary.length; i++) {
-        let book = document.createElement("div");
-        let bookIndex = index;
-        book.classList.add("book");
-        book.id = String(bookIndex);
-        bookcase.appendChild(book);
-        for (const property in newBook) {
-            let bookInfo = document.createElement("div");
-            bookInfo.classList.add("bookInfo");
-            if (property === "author" || property === "title") {
-                let str = property.charAt(0).toUpperCase() + property.slice(1);
-                bookInfo.textContent = `${str}: ${myLibrary[i][property]}`;
-                book.appendChild(bookInfo);
-            }
-            if (property === "pages") {
-                bookInfo.textContent = `Pages: ${myLibrary[i][property]}`;
-                book.appendChild(bookInfo);
-            }
-            if (property === "readUnread") {
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.id = `checkbox${bookIndex}`;
-                checkbox.classList.add("readUnreadCheckboxes");
-                const label = document.createElement("label");
-                label.id = `label${bookIndex}`;
-                label.htmlFor = "readCheck";
-                label.classList.add("readUnreadLabels")
-                if (myLibrary[i][property] === "read") {
-                    label.appendChild(document.createTextNode(" Read"));
-                    checkbox.checked = true;
-                }
-                if (myLibrary[i][property] === "unread") {
-                    label.appendChild(document.createTextNode(" Unread"));
-                    checkbox.checked = false;
-                }
-                bookInfo.appendChild(checkbox);
-                bookInfo.appendChild(label);
-                checkbox.addEventListener("change", () => {
-                    let box = document.getElementById("checkbox" + book.id);
-                    let labelChange = document.getElementById("label" + book.id);
-                    labelChange.textContent = "";
-                    if (box.checked) {
-                        labelChange.appendChild(document.createTextNode(" Read"));
-                    } else {
-                        labelChange.appendChild(document.createTextNode(" Unread"));
-                    }
-                })
-                book.appendChild(bookInfo);
-            }
+    // if (read.checked) {
+    //     readCheck = 'read';
+    // } else {
+    //     readCheck = 'unread';
+    // }
+
+    // show confirmation
+    document.querySelector('.alert').style.display = 'block';
+
+    // Hide confirmation after 3s
+    setTimeout(() => {
+        document.querySelector('.alert').style.display = 'none';
+    }, 3000);
+
+    // creates new book object with user form data
+    myBook = new Book(title, pages, author, readStatus);
+    // books.push(myBook);
+
+    let info = document.createElement('p');
+    let book = document.createElement('div');
+    book.classList.add('card');
+
+    for (const prop in myBook) {
+        if (typeof myBook[prop] !== 'function' && prop !== 'read') {
+            info.innerHTML += myBook[prop] + ' ';
         }
-        const remove = document.createElement("button");
-        remove.classList.add("removeBtn");
-        remove.textContent = "Remove";
-        remove.id = String(index);
-        remove.addEventListener("click", () => {
-            let bookRemove = document.getElementById(remove.id);
-            let bookRemoveNum = bookRemove.id;
-            bookRemove.textContent = "";
-            myLibrary.splice(parseInt(bookRemove.id), 1);
-            bookRemove.removeAttribute("class");
-            Array.from(document.querySelectorAll(".readUnreadCheckboxes")).forEach((checkbox) => {
-                checkboxNum = parseInt(checkbox.id.slice(8));
-                if (checkboxNum > bookRemoveNum) {
-                    checkbox.id = `checkbox${checkboxNum - 1}`;
-                }
-            })
-            Array.from(document.querySelectorAll(".readUnreadLabels")).forEach((label) => {
-                labelNum = parseInt(label.id.slice(5));
-                if (labelNum > bookRemoveNum) {
-                    label.id = `label${labelNum - 1}`;
-                }
-            })
-            Array.from(document.querySelectorAll(".removeBtn")).forEach((btn) => {
-                btnNum = parseInt(btn.id);
-                if (btnNum > bookRemoveNum) {
-                    btn.id = `${btnNum -= 1}`;
-                }
-            })
-            Array.from(document.querySelectorAll(".book")).forEach((book) => {
-                bookNum = parseInt(book.id);
-                if (bookNum > bookRemoveNum) {
-                    book.id = `${bookNum -= 1}`;
-                }
-            })
-            remove.remove();
-            bookRemove.remove();
-            index -= 1;
-        })
-        book.appendChild(remove);
     }
-    index += 1
+    book.appendChild(info);
+
+    // add the book's array index number to keep track of it
+    book.dataset.key = key;
+    // book.dataset.indexNumber = books.length - 1;
+
+    // creates remove button
+    let removeBtn = document.createElement('button');
+    removeBtn.classList.add('remove-btn');
+    removeBtn.innerHTML = 'Remove Entry';
+    removeBtn.addEventListener('click', (ev) => {
+        // remove the child node of the books node that has the key of the variable key
+        let key = ev.target.parentElement.dataset.key;
+        booksRef.child(key).remove();
+        // let index = ev.target.parentElement.dataset.indexNumber;
+        // books.splice(index, 1);
+        // container.removeChild(ev.target.parentElement);
+        // decreaseIndex(index);
+    })
+
+    // creates read/unread button
+    let readBtn = document.createElement('button');
+    readBtn.classList.add('read-btn');
+    readBtn.innerHTML = 'Change Read Status';
+    readBtn.addEventListener('click', (ev) => {
+        let key = ev.target.parentElement.dataset.key;
+
+        // update database to change read status
+        if (readStatus === 'read') {
+            booksRef.child(key).update({ 'read': 'unread' });
+        } else {
+            booksRef.child(key).update({ 'read': 'read' });
+        }
+
+        // let index = ev.target.parentElement.dataset.indexNumber;
+        // let book = books[index];
+        // let readCheckbox = document.getElementById(`read-checkbox-${index}`)
+        // book.changeReadStatus(book['read']);
+        // if (book['read'] === 'unread') {
+        //     readCheckbox.checked = false;
+        // } else {
+        //     readCheckbox.checked = true;
+        // }
+    })
+
+    // creates read/unread checkbox
+    let readCheckbox = document.createElement('input');
+    readCheckbox.type = 'checkbox';
+    readCheckbox.name = 'readCheckbox';
+    readCheckbox.value = 'read';
+    readCheckbox.disabled = true;
+    // readCheckbox.id = `read-checkbox-${book.dataset.indexNumber}`;
+    readCheckbox.classList.add('read-checkbox');
+    if (readStatus === 'read') {
+        readCheckbox.checked = true;
+    }
+
+    book.appendChild(removeBtn);
+    book.appendChild(readBtn);
+    book.appendChild(readCheckbox);
+    container.appendChild(book);
 }
 
+// decreases the dataset-index-number of all the book cards that are greater than the one being deleted
+decreaseIndex = (index) => {
+    // could also loop thru all the container's children
+    let cards = document.querySelectorAll('.card');
+    cards.forEach((card) => {
+        let cardIndex = card.dataset.indexNumber;
+        if (cardIndex > index) {
+            card.dataset.indexNumber -= 1;
+        }
+    })
+}
 
+// Get Input Value
+getInputValue = id => {
+    return document.getElementById(id).value;
+}
 
+// modal interactions
+modal.style.display = 'none';
 
+addBtn.addEventListener('click', () => {
+    modal.style.display = 'flex';
+})
 
+exitBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+    form.reset();
+})
+
+cancelBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+    form.reset();
+})
+
+// check if all form sections are filled in
+validateForm = (form) => {
+    for (let i = 0; i < form.length - 2; i++) {
+        if (form[i].value === '') {
+            return false;
+        }
+    }
+    if (document.querySelector('input[name="book-read"]:checked') == null) {
+        return false;
+    }
+    return true;
+}
+
+modalForm.addEventListener('submit', (ev) => {
+    if (ev.submitter.id === 'submit-btn') {
+        ev.preventDefault();
+        modal.style.display = 'none';
+        // uploads data to firebase
+        let title = getInputValue('book-title');
+        let pages = getInputValue('book-pages');
+        let author = getInputValue('book-author');
+        let read = document.getElementById('book-read');
+        let readStatus = '';
+
+        if (read.checked) {
+            readStatus = 'read';
+        } else {
+            readStatus = 'unread';
+        }
+        saveMessage(title, pages, author, readStatus)
+    }
+    form.reset();
+})
+
+// Save message to firebase
+saveMessage = (title, pages, author, read) => {
+    let newBookRef = booksRef.push();
+    // sends object data to firebase
+    newBookRef.set({
+        title: title,
+        pages: pages,
+        author: author,
+        read: read,
+    })
+}
