@@ -1,1 +1,1 @@
-This is the start of my first project using JS OOP.
+This is the start of my first project using JS OOP and Firebase's Realtime Database.
