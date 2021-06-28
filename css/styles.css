@@ -1,6 +1,14 @@
+/* font-family: 'Fraunces', serif;
+font-family: 'Merriweather Sans', sans-serif; */
+
+button:hover {
+    cursor: pointer;
+}
+
 main {
     display: grid;
     row-gap: 30px;
+    font-family: 'Fraunces', serif;
 }
 
 main > * {
@@ -16,9 +24,41 @@ main > * {
     justify-content: center;
     background-color: #333;
     color: #fff;
+    font-size: 30px;
+}
+
+.title-text {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 800;
+    padding: 30px;
+}
+
+/* add book */
+#add-btn {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    padding: 10px;
+}
+
+#add-btn:hover {
+    transition-timing-function: ease-out;
+    transition-duration: 0.5s;
+    transform: scale(1.2);
 }
 
 /* modal */
+
+legend {
+    display: flex;
+    align-items: center;
+}
+
+legend h1 {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+}
 
 .modal {
     position: fixed;
@@ -35,6 +75,36 @@ main > * {
     width: 400px;
     background-color: #fff;
     padding: 30px;
+    display: grid;
+    grid-template-rows: 0.5fr repeat(6, 1fr);
+}
+
+.modal-title, .modal-pages, .modal-author {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.modal-input {
+    padding: 1px;
+}
+
+.read-status {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.action-btns {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#submit-btn, #cancel-btn {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
 }
 
 .exit {
@@ -45,6 +115,10 @@ main > * {
 
 .fa-times {
     color: #f00;
+}
+
+.fa-times:hover {
+    cursor: pointer;
 }
 
 /* container */
@@ -78,11 +152,50 @@ main > * {
     padding: 10px;
 }
 
+/* alert */
+
 .alert {
     text-align: center;
     padding: 10px;
     background: #79c879;
     color: #fff;
-    margin-bottom: 10px;
+    margin: 0 auto;
     display: none;
+    width: 500px;
+}
+
+/* card */
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.titleDiv, .pagesDiv, .authorDiv {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.titleContent, .pagesContent, .authorContent {
+    margin-left: 5px;
+}
+
+.readStatusDiv {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.read-btn, .remove-btn {
+    font-family: 'Merriweather Sans', sans-serif;
+    font-weight: 800;
+    font-size: 12px;
+    padding: 5px;
+}
+
+input:disabled {
+    color: green;
 }
